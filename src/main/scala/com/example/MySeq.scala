@@ -5,7 +5,7 @@ import scala.collection.generic.DefaultSerializable
 import scala.collection.{IterableFactoryDefaults, SeqFactory, mutable}
 import scala.collection.immutable.{AbstractSeq, IndexedSeqOps, StrictOptimizedSeqOps}
 
-class MySeq[+A](data: Array[AnyRef])
+class MySeq[+A](data: Array[Any])
   extends AbstractSeq[A]
   with IndexedSeq[A]
   with IndexedSeqOps[A, MySeq, MySeq[A]]
@@ -21,10 +21,10 @@ class MySeq[+A](data: Array[AnyRef])
 
   override def map[B](f: A => B): MySeq[B] = {
     val len = length
-    val a = new Array[AnyRef](len)
+    val a = new Array[Any](len)
     var i = 0
     while(i < len) {
-      a(i) = f(data(i).asInstanceOf[A]).asInstanceOf[AnyRef]
+      a(i) = f(data(i).asInstanceOf[A])
       i += 1
     }
     new MySeq[B](a)
@@ -36,16 +36,15 @@ object MySeq extends SeqFactory[MySeq] {
   def empty[A]: MySeq[A] = _empty
 
   def newBuilder[A]: mutable.Builder[A, MySeq[A]] =
-    Array.newBuilder[AnyRef]
-      .mapResult(b => new MySeq(b.toArray))
-      .asInstanceOf[mutable.Builder[A, MySeq[A]]]
+    Array.newBuilder[Any]
+      .mapResult(new MySeq(_))
 
   def from[A](source: IterableOnce[A]): MySeq[A] =
-    new MySeq[A](Array.from(source.asInstanceOf[IterableOnce[AnyRef]]))
+    new MySeq(Array.from(source))
 }
 
 object MySeqDemo extends App {
-  val s = new MySeq[String](Array[AnyRef]("a", "b", "c"))
+  val s = new MySeq[String](Array("a", "b", "c"))
   s.foreach(println)
   println(s.indexWhere(_ > "b"))
   println(s)

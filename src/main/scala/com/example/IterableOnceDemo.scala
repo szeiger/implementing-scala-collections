@@ -2,7 +2,7 @@ package com.example
 
 import java.util.PrimitiveIterator
 
-import scala.collection.{Stepper, StepperShape, mutable}
+import scala.collection.{IntStepper, Stepper, StepperShape, mutable}
 
 class MyIterableOnce extends IterableOnce[Int] {
   private[this] val data = Array(1, 2, 3)
@@ -13,7 +13,8 @@ class MyIterableOnce extends IterableOnce[Int] {
 }
 
 object IterableOnceDemo extends App {
-  val it: PrimitiveIterator.OfInt = (new MyIterableOnce).stepper.javaIterator
+  val st: IntStepper = (new MyIterableOnce).stepper
+  val it: PrimitiveIterator.OfInt = st.javaIterator
   while(it.hasNext)
     println(it.next())
 
